@@ -1,35 +1,54 @@
-using System;
-
-public class Program
+class Program
 {
-    static void Main(string[] args)
-    {
-        List<int> numbers = [1, 2, 3, 4, 5, 6];
-        RotateListRight(numbers, 2);
+    private static bool IsFloat(string text) {
+        return float.TryParse(text, out _);
+    }
+        
+    public static float Run(string text) {
+        var stack = new Stack<float>();
+        foreach (var item in text.Split(' ')) {
+            if (item == "+" || item == "-" || item == "*" || item == "/") {
+                if (stack.Count < 2)
+                    throw new ApplicationException("Invalid Case 1!");
+
+                var op2 = stack.Pop();
+                var op1 = stack.Pop();
+                float res;
+                if (item == "+") {
+                    res = op1 + op2;
+                }
+                else if (item == "-") {
+                    res = op1 - op2;
+                }
+                else if (item == "*") {
+                    res = op1 * op2;
+                }
+                else {
+                    if (op2 == 0)
+                        throw new ApplicationException("Invalid Case 2!");
+
+                    res = op1 / op2;
+                }
+
+                stack.Push(res);
+            }
+            else if (IsFloat(item)) {
+                stack.Push(float.Parse(item));
+            }
+            else if (item == "") {
+            }
+            else {
+                throw new ApplicationException("Invalid Case 3!");
+            }
+        }
+
+        if (stack.Count != 1)
+            throw new ApplicationException("Invalid Case 4!");
+
+        return stack.Pop();
     }
 
-    static void RotateListRight(List<int> data, int amount)
-    {
-        List<int> lastItems = new();
-        for (int i = data.Count - 1, counter = 0; counter < amount; i--, counter++)
-        {
-            lastItems.Add(data[i]);
-        }
-
-        int index;
-        for (index = data.Count - 1; (index - amount) >= 0; index--)
-        {
-            data[index] = data[index - amount];
-        }
-
-        for (int i = 0; i < lastItems.Count; i++, index--)
-        {
-            data[index] = lastItems[i];
-        }
-
-        foreach (var item in data)
-        {
-            Console.WriteLine(item);
-        }
+    static void Main() {
+        Console.WriteLine(Run("5 3 7 + +"));
     }
 }
