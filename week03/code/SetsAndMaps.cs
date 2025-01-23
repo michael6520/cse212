@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 public static class SetsAndMaps
 {
@@ -21,8 +22,23 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        HashSet<string> seen = new();
+        List<string> resultList = new();
+
+        foreach (var word in words)
+        {
+            string reversed = word[1].ToString() + word[0].ToString();
+            if (seen.Contains(reversed))
+            {
+                resultList.Add($"{word} & {reversed}");
+            }
+            else
+            {
+                seen.Add(word);
+            }
+        }
+        string [] result = resultList.ToArray();
+        return result;
     }
 
     /// <summary>
@@ -42,9 +58,16 @@ public static class SetsAndMaps
         foreach (var line in File.ReadLines(filename))
         {
             var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
-        }
+            if (degrees.ContainsKey(fields[3]))
+            {
+                degrees[fields[3]]++;
+            }
+            else
+            {
+                degrees.Add(fields[3], 1);                
+            }
 
+        }
         return degrees;
     }
 
@@ -65,9 +88,48 @@ public static class SetsAndMaps
     /// using the [] notation.
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
-    {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+    {   
+        word1 = Regex.Replace(word1.ToLower(), @"\s+", "");
+        word2 = Regex.Replace(word2.ToLower(), @"\s+", "");
+
+        if (!(word1.Length == word2.Length))
+        {
+            return false;
+        }
+
+        Dictionary<char, int> letterSet = new();
+
+        foreach (char letter in word1)
+        {
+            if (letterSet.ContainsKey(letter))
+            {
+                letterSet[letter]++;
+            }
+            else
+            {
+                letterSet.Add(letter, 1);
+            }
+        }
+
+        foreach (char c in word2)
+        {
+            if (!letterSet.ContainsKey(c) || letterSet[c] == 0)
+            {
+                return false;
+            }
+
+            letterSet[c]--;
+        }
+
+        foreach (var count in letterSet.Values)
+        {
+            if (count != 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
